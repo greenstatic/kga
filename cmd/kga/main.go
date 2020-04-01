@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/greenstatic/kga/cmd/kgo/cmd"
+	"github.com/greenstatic/kga/cmd/kga/cmd"
 	"github.com/greenstatic/kga/pkg/log"
 	"github.com/spf13/cobra"
 )

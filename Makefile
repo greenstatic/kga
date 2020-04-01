@@ -9,7 +9,7 @@ BINARY_MACOS=$(BINARY_NAME)_macos
 BINARY_LINUX=$(BINARY_NAME)_linux_amd64
 
 BUILD_DIR=./bin
-MAIN_PACKAGE="./cmd/kgo"
+MAIN_PACKAGE="./cmd/kga"
 
 default: build
 
