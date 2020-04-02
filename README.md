@@ -32,7 +32,14 @@ app/
 ```
 
 ## Installation
-TODO
+```bash
+go install github.com/greenstatic/kga/cmd/kga
+```
+
+### Installation from Source
+1. Clone repo
+2. Run `make`
+3. The built executable should be in `./bin/kga`
 
 ## Usage
 1. Move into the directory where you wish to save your Kubernetes applications
