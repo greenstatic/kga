@@ -58,10 +58,11 @@ otherwise we will use helm and hope it is in your path.`,
 
 		if kgaConfig.AppType() == config.AppTypeHelm {
 			log.Info("Running Helm manifest generation")
-			generate.CreateHelmChartManifests(kgaConfig.Spec.Helm, appPath)
+			generate.CreateHelmChartManifests(appPath, kgaConfig.Spec.Helm)
 
 		} else {
-			log.Fatal("Unsupported AppType, we currently only support helm.")
+			log.Info("Running URL manifest generation")
+			generate.DownloadManifestFiles(appPath, kgaConfig.Spec.Manifest)
 		}
 
 		if kgaConfig.HasExcludeSpec() {
@@ -86,7 +87,13 @@ otherwise we will use helm and hope it is in your path.`,
 			log.Info("Overlay exists, leaving it alone")
 		} else {
 			log.Info("Creating overlay directory structure")
-			if err := layout.OverlayCreateGeneralLayout(appPath, kgaConfig.Spec.Helm.Namespace); err != nil {
+
+			namespace := kgaConfig.Name
+			if kgaConfig.AppType() == config.AppTypeHelm {
+				namespace = kgaConfig.Spec.Helm.Namespace
+			}
+
+			if err := layout.OverlayCreateGeneralLayout(appPath, namespace); err != nil {
 				log.Fatal(err)
 			}
 

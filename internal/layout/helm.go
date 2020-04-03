@@ -13,7 +13,7 @@ func CreateHelmValuesFile(appPath string) error {
 }
 
 func CreateBaseHelmManifests(appPath, chartName string, manifests []byte) error {
-	if err := createBaseManifestsDir(appPath); err != nil {
+	if err := CreateBaseManifestsDir(appPath); err != nil {
 		return errors.Wrap(err, "failed to create base/manifests dir")
 	}
 

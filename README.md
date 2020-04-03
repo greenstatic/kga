@@ -50,6 +50,7 @@ go install github.com/greenstatic/kga/cmd/kga
 6. Now you can simply do `kubectl apply -k <app-name>` or `kustomize build <app-name>` to view your app's resources
 
 ## Example kga.yaml file
+### App Type Helm
 ```yaml
 kind: kga-app
 version: v1alpha
@@ -70,6 +71,24 @@ spec:
     metadata:
       labels:
         app: nginx-ingress
+```
+
+### App Type Manifest
+```yaml
+kind: kga-app
+version: v1alpha
+name: kubernetes-dashboard
+spec:
+  manifest:
+    urls:
+      - "https://raw.githubusercontent.com/kubernetes/dashboard/{{ .version }}/{{ .foo }}/deploy/recommended.yaml"
+    template:
+      version: v2.0.0-rc7
+      foo: aio
+
+  # Used just to demonstrate the usage of exclude spec
+  exclude:
+  - kind: Secret
 ```
 
 ## Why Did We Develop kga?

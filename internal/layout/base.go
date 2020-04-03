@@ -8,7 +8,7 @@ import (
 	"text/template"
 )
 
-func createBaseManifestsDir(appPath string) error {
+func CreateBaseManifestsDir(appPath string) error {
 	path := filepath.Join(appPath, "base", "manifests")
 	return os.MkdirAll(path, os.FileMode(0755))
 }
