@@ -35,7 +35,7 @@ type ManifestSpec struct {
 	Urls    []string
 }
 
-type ExcludeItemSpec map[string]string
+type ExcludeItemSpec map[interface{}]interface{}
 
 func (c *Config) AppType() AppType {
 	if c.Spec.Helm != nil {
@@ -46,4 +46,8 @@ func (c *Config) AppType() AppType {
 	}
 
 	panic("unknown AppType due to bad config")
+}
+
+func (c *Config) HasExcludeSpec() bool {
+	return c.Spec != nil && c.Spec.Exclude != nil
 }

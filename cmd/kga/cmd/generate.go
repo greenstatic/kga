@@ -60,6 +60,14 @@ var Generate = &cobra.Command{
 			log.Fatal("Unsupported AppType, we currently only support helm.")
 		}
 
+		if kgaConfig.HasExcludeSpec() {
+			log.Info("Running kga manifest exclusion spec")
+			if err := generate.RemoveExcludedBaseManifests(appPath, kgaConfig.Spec.Exclude); err != nil {
+				log.Error(err)
+				log.Fatal("Failed to run kga exclusion spec")
+			}
+		}
+
 		log.Info("Generating base/kustomization.yaml")
 		if err := layout.CreateBaseKustomization(appPath); err != nil {
 			log.Fatal(err)
@@ -85,8 +93,4 @@ var Generate = &cobra.Command{
 
 		log.Info("Successfully generated kga app")
 	},
-}
-
-func init() {
-
 }
