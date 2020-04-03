@@ -49,6 +49,29 @@ go install github.com/greenstatic/kga/cmd/kga
 5. Run: `kga generate <app-name>`
 6. Now you can simply do `kubectl apply -k <app-name>` or `kustomize build <app-name>` to view your app's resources
 
+## Example kga.yaml file
+```yaml
+kind: kga-app
+version: v1alpha
+name: nginx-ingress
+spec:
+  helm:
+    chartName: nginx-ingress
+    version: 1.34.3
+    repoName: stable
+    repoUrl: https://kubernetes-charts.storage.googleapis.com/
+    namespace: nginx-ingress
+    valuesFile: ./helm_values.yaml
+
+  # Used just to demonstrate the usage of exclude spec
+  exclude:
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      labels:
+        app: nginx-ingress
+```
+
 ## Why Did We Develop kga?
 We are firm believers in maintaining applications in Kubernetes by practicing GitOps.
 One of the challenges we faced when doing Kubernetes GitOps was the lack of tooling for maintain apps.
