@@ -65,7 +65,8 @@ version: {{ .kgaVersion }}
 name: {{ .appName }}
 spec:
   manifest:
-    version: # TODO - optional
     urls:
-    - "https://example.com/{{"{{"}} version {{"}}"}}/manifests.yaml" # TODO - replace
+    - "https://example.com/{{"{{"}} .version {{"}}"}}/manifests.yaml" # TODO - replace
+    template:
+      version: v2.0.0
 `

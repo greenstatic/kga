@@ -31,7 +31,7 @@ func helmCheckExecutable() {
 	}
 }
 
-func CreateHelmChartManifests(spec *config.HelmSpec, appPath string) {
+func CreateHelmChartManifests(appPath string, spec *config.HelmSpec) {
 	helmCheckExecutable()
 
 	if output, outputStderr, err := helmRepoAdd(spec.RepoName, spec.RepoUrl); err != nil {

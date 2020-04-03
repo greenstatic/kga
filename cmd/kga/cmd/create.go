@@ -19,11 +19,6 @@ var Create = &cobra.Command{
 			log.Fatal("Unrecognized type, type can only be: helm or manifest")
 		}
 
-		// TODO - implement fully
-		if appType == config.AppTypeManifest {
-			log.Fatal("Currently unsupported, coming soon!")
-		}
-
 		wd, err := filepath.Abs(cmd.Flag("output").Value.String())
 		if err != nil {
 			log.Fatal(err)
