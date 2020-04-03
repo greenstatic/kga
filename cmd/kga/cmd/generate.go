@@ -64,6 +64,14 @@ otherwise we will use helm and hope it is in your path.`,
 			log.Fatal("Unsupported AppType, we currently only support helm.")
 		}
 
+		if kgaConfig.HasExcludeSpec() {
+			log.Info("Running kga manifest exclusion spec")
+			if err := generate.RemoveExcludedBaseManifests(appPath, kgaConfig.Spec.Exclude); err != nil {
+				log.Error(err)
+				log.Fatal("Failed to run kga exclusion spec")
+			}
+		}
+
 		log.Info("Generating base/kustomization.yaml")
 		if err := layout.CreateBaseKustomization(appPath); err != nil {
 			log.Fatal(err)
@@ -89,8 +97,4 @@ otherwise we will use helm and hope it is in your path.`,
 
 		log.Info("Successfully generated kga app")
 	},
-}
-
-func init() {
-
 }
