@@ -14,6 +14,11 @@ import (
 )
 
 func helmExecutablePath() string {
+	envHelm := os.Getenv("HELM")
+	if envHelm != "" {
+		return envHelm
+	}
+
 	return "helm" // assume that it is in the users path
 }
 
@@ -61,7 +66,7 @@ func CreateHelmChartManifests(spec *config.HelmSpec, appPath string) {
 		log.Fatal(err)
 	}
 
-	log.Info("Removing tmp dir: " + manifestDir)
+	log.Info("Removing temporary directory: " + manifestDir)
 	_ = os.RemoveAll(manifestDir) // cleanup tmp dir
 
 	if err := layout.CreateBaseHelmManifests(appPath, spec.ChartName, output); err != nil {
@@ -70,8 +75,9 @@ func CreateHelmChartManifests(spec *config.HelmSpec, appPath string) {
 }
 
 func helmRepoAdd(repoName, repoUrl string) ([]byte, []byte, error) {
-	log.Infof("Running: helm repo add %s %s", repoName, repoUrl)
-	helm := exec.Command(helmExecutablePath(), "repo", "add", repoName, repoUrl)
+	helmCmd := helmExecutablePath()
+	log.Infof("Running: %s repo add %s %s", helmCmd, repoName, repoUrl)
+	helm := exec.Command(helmCmd, "repo", "add", repoName, repoUrl)
 	stderrBuf := new(bytes.Buffer)
 	helm.Stderr = stderrBuf
 	out, err := helm.Output()
@@ -79,8 +85,9 @@ func helmRepoAdd(repoName, repoUrl string) ([]byte, []byte, error) {
 }
 
 func helmRepoUpdate() ([]byte, []byte, error) {
-	log.Infof("Running: helm repo update")
-	helm := exec.Command(helmExecutablePath(), "repo", "update")
+	helmCmd := helmExecutablePath()
+	log.Infof("Running: %s repo update", helmCmd)
+	helm := exec.Command(helmCmd, "repo", "update")
 	stderrBuf := new(bytes.Buffer)
 	helm.Stderr = stderrBuf
 	out, err := helm.Output()
@@ -93,10 +100,11 @@ func helmFetch(repoName, chartName, version string) (string, []byte, []byte, err
 		return "", []byte{}, []byte{}, err
 	}
 
+	helmCmd := helmExecutablePath()
 	repoSlashChart := fmt.Sprintf("%s/%s", repoName, chartName)
-	log.Infof("Running: helm fetch %s --untar --version %s", repoSlashChart, version)
+	log.Infof("Running: %s fetch %s --untar --version %s", helmCmd, repoSlashChart, version)
 
-	helm := exec.Command(helmExecutablePath(), "fetch", repoSlashChart, "--untar", "--version", version)
+	helm := exec.Command(helmCmd, "fetch", repoSlashChart, "--untar", "--version", version)
 	helm.Dir = tmpDir
 	out, err := helm.Output()
 	stderrBuf := new(bytes.Buffer)
@@ -106,7 +114,8 @@ func helmFetch(repoName, chartName, version string) (string, []byte, []byte, err
 }
 
 func helmTemplate(appPath, helmFetchDir, chartName, namespace, valuesFile string) ([]byte, []byte, error) {
-	log.Infof("Running: helm template --name-template %s --namespace %s -f %s .", chartName, namespace, valuesFile)
+	helmCmd := helmExecutablePath()
+	log.Infof("Running: %s template --name-template %s --namespace %s -f %s .", helmCmd, chartName, namespace, valuesFile)
 
 	chartDirTmp := filepath.Join(helmFetchDir, chartName)
 	exists, err := layout.FileOrDirExists(chartDirTmp)
@@ -120,7 +129,7 @@ func helmTemplate(appPath, helmFetchDir, chartName, namespace, valuesFile string
 
 	valuesFileAbs := filepath.Join(appPath, valuesFile)
 
-	helm := exec.Command(helmExecutablePath(), "template", "--name-template", chartName, "--namespace", namespace,
+	helm := exec.Command(helmCmd, "template", "--name-template", chartName, "--namespace", namespace,
 		"-f", valuesFileAbs, ".")
 	stderrBuff := new(bytes.Buffer)
 	helm.Stderr = stderrBuff
