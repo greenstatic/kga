@@ -31,6 +31,7 @@ type HelmSpec struct {
 }
 
 type ManifestSpec struct {
+	Version string
 	Urls    []string
 	Template map[string]string
 }

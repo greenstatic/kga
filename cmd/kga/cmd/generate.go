@@ -62,7 +62,7 @@ otherwise we will use helm and hope it is in your path.`,
 
 		} else {
 			log.Info("Running URL manifest generation")
-			generate.DownloadManifestFiles(appPath, kgaConfig.Spec.Manifest)
+			generate.DownloadManifestFiles(appPath, kgaConfig.Spec.Manifest, kgaConfig)
 		}
 
 		if kgaConfig.HasExcludeSpec() {

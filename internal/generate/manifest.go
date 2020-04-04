@@ -13,14 +13,14 @@ import (
 	"text/template"
 )
 
-func DownloadManifestFiles(appPath string, spec *config.ManifestSpec) {
+func DownloadManifestFiles(appPath string, spec *config.ManifestSpec, cnfg *config.Config) {
 	if err := layout.CreateBaseManifestsDir(appPath); err != nil {
 		log.Error(err)
 		log.Fatal("Failed to create base manifest directory")
 	}
 
 	for _, urlTemplate := range spec.Urls {
-		url, err := manifestUrlApplyTemplate(urlTemplate, spec.Template)
+		url, err := manifestUrlApplyTemplate(urlTemplate, spec.Version, cnfg, spec.Template)
 		if err != nil {
 			log.Error(err)
 			log.Fatal("URL templating failed")
@@ -42,17 +42,28 @@ func DownloadManifestFiles(appPath string, spec *config.ManifestSpec) {
 	}
 }
 
-func manifestUrlApplyTemplate(url string, tmpl map[string]string) (string, error) {
+type templateFields struct {
+	Version string
+	Template map[string]string
+	Config *config.Config
+}
+
+func manifestUrlApplyTemplate(url string, version string, cnfg *config.Config, tmpl map[string]string) (string, error) {
 	t, err := template.New("url").Parse(url)
 	if err != nil {
 		return "", err
 	}
 
-	buff := new(bytes.Buffer)
-	if err := t.Execute(buff, tmpl); err != nil {
-		return "", err
+	fields := templateFields{
+		Version:  version,
+		Template: tmpl,
+		Config:   cnfg,
 	}
 
+	buff := new(bytes.Buffer)
+	if err := t.Execute(buff, fields); err != nil {
+		return "", err
+	}
 
 	return buff.String(), nil
 }
