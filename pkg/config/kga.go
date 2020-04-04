@@ -30,6 +30,10 @@ func VerifyKgaFile(path string) error {
 	}
 
 	if conf.Spec != nil {
+		if conf.Spec.Namespace == "" {
+			return errors.New("spec.namespace field is missing")
+		}
+
 		if conf.Spec.Helm == nil && conf.Spec.Manifest == nil {
 			return errors.New("spec.helm or spec.manifest field required (exclusive disjunction)")
 		}
@@ -53,14 +57,12 @@ func VerifyKgaFile(path string) error {
 			if conf.Spec.Helm.ChartName == "" {
 				return errors.New("spec.helm.chartName field is missing")
 			}
-			if conf.Spec.Helm.Namespace == "" {
-				return errors.New("spec.helm.namespace field is missing")
-			}
 		}
 
 		if conf.Spec.Manifest != nil {
-			// TODO - verify URL can be bult from template
-			//conf.Spec.Manifest.Urls
+			if len(conf.Spec.Manifest.Urls) == 0 {
+				return errors.New("spec.manifest.urls is empty")
+			}
 		}
 
 		// Check all Manifest contains at least one element if it is specified

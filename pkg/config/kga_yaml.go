@@ -51,12 +51,12 @@ var kgaHelmTemplate = `kind: kga-app
 version: {{ .kgaVersion }}
 name: {{ .appName }}
 spec:
+  namespace: {{ .appName }}
   helm:
     chartName: # TODO
     version:   # TODO
     repoName:  # TODO
     repoUrl:   # TODO
-    namespace: {{ .appName }}
     valuesFile: ./helm_values.yaml
 `
 
@@ -64,6 +64,7 @@ var kgaManifestTemplate = `kind: kga-app
 version: {{ .kgaVersion }}
 name: {{ .appName }}
 spec:
+  namespace: {{ .appName }}
   manifest:
     urls:
     - "https://example.com/{{"{{"}} .version {{"}}"}}/manifests.yaml" # TODO - replace
