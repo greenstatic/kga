@@ -16,6 +16,7 @@ const (
 )
 
 type Spec struct {
+	Namespace string `yaml:"namespace"`
 	Helm     *HelmSpec          `yaml:"helm,omitempty"`
 	Manifest *ManifestSpec      `yaml:"manifest,omitempty"`
 	Exclude  *[]ExcludeItemSpec `yaml:"exclude,omitempty"`
@@ -26,7 +27,6 @@ type HelmSpec struct {
 	Version    string `yaml:"version"`
 	RepoName   string `yaml:"repoName"`
 	RepoUrl    string `yaml:"repoUrl"`
-	Namespace  string `yaml:"namespace"`
 	ValuesFile string `yaml:"valuesFile"`
 }
 

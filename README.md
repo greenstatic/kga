@@ -56,12 +56,12 @@ kind: kga-app
 version: v1alpha
 name: nginx-ingress
 spec:
+  namespace: nginx-ingress
   helm:
     chartName: nginx-ingress
     version: 1.34.3
     repoName: stable
     repoUrl: https://kubernetes-charts.storage.googleapis.com/
-    namespace: nginx-ingress
     valuesFile: ./helm_values.yaml
 
   # Used just to demonstrate the usage of exclude spec
@@ -81,6 +81,7 @@ kind: kga-app
 version: v1alpha
 name: dashboard
 spec:
+  namespace: kubernetes-dashboard
   manifest:
     version: v2.0.0-rc6
 

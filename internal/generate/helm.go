@@ -31,7 +31,7 @@ func helmCheckExecutable() {
 	}
 }
 
-func CreateHelmChartManifests(appPath string, spec *config.HelmSpec) {
+func CreateHelmChartManifests(appPath, namespace string, spec *config.HelmSpec) {
 	helmCheckExecutable()
 
 	if output, outputStderr, err := helmRepoAdd(spec.RepoName, spec.RepoUrl); err != nil {
@@ -58,7 +58,7 @@ func CreateHelmChartManifests(appPath string, spec *config.HelmSpec) {
 
 	log.Info("Temporary helm chart dir: " + manifestDir)
 
-	output, outputStderr, err = helmTemplate(appPath, manifestDir, spec.ChartName, spec.Namespace, spec.ValuesFile)
+	output, outputStderr, err = helmTemplate(appPath, manifestDir, spec.ChartName, namespace, spec.ValuesFile)
 	if err != nil {
 		log.Error("Command failed to run")
 		log.Error(output)
