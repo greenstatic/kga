@@ -74,21 +74,31 @@ spec:
 ```
 
 ### App Type Manifest
+Note: When using `kga create` use the `-t manifest` flag.
+
 ```yaml
 kind: kga-app
 version: v1alpha
-name: kubernetes-dashboard
+name: dashboard
 spec:
   manifest:
+    version: v2.0.0-rc6
+
+    # Use .Version to get spec.manifest.version
+    # Use .Template.<your key>
+    # Use .Config to access any field in config (see Go template rules) - hint: key names in this case begin
+    #     with capital letter.
+    #
+    # Example showing all three.
     urls:
-      - "https://raw.githubusercontent.com/kubernetes/dashboard/{{ .version }}/{{ .foo }}/deploy/recommended.yaml"
+    - "https://raw.githubusercontent.com/kubernetes/{{.Config.Name}}/{{ .Version }}/{{ .Template.foo }}/deploy/recommended.yaml"
     template:
-      version: v2.0.0-rc7
       foo: aio
 
   # Used just to demonstrate the usage of exclude spec
   exclude:
   - kind: Secret
+
 ```
 
 ## Why Did We Develop kga?
