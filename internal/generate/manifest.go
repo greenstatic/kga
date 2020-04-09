@@ -13,7 +13,7 @@ import (
 	"text/template"
 )
 
-func DownloadManifestFiles(appPath string, spec *config.ManifestSpec, cnfg *config.Config) {
+func DownloadManifestFiles(appPath string, spec *config.ManifestSpec, cnfg *config.Config, removeNamespaceResources bool) {
 	if err := layout.CreateBaseManifestsDir(appPath); err != nil {
 		log.Error(err)
 		log.Fatal("Failed to create base manifest directory")
@@ -33,11 +33,33 @@ func DownloadManifestFiles(appPath string, spec *config.ManifestSpec, cnfg *conf
 			log.Fatal("Failed to download URL contents")
 		}
 
+		removedManifest := make([]byte, 0)
+
+		if removeNamespaceResources {
+			log.Info("Excluding namespace resources from manifest")
+			removedManifestsStr, manifests, err := removeNamespaceResource(string(contents))
+			if err != nil {
+				log.Error(err)
+				log.Fatal("Failed to remove namespace resources")
+			}
+
+			contents = []byte(manifests)
+			removedManifest = []byte(removedManifestsStr)
+		}
+
 		filename := urlFileName(url)
-		log.Infof("Saving file %s to base/manifests", filename)
+		log.Infof("Saving manifests to base/manifests/%s", filename)
 		if err := saveContentsToBaseManifests(appPath, filename, contents); err != nil {
 			log.Error(err)
 			log.Fatal("Failed to save downloaded manifest contents to file")
+		}
+
+		if len(removedManifest) > 0 {
+			log.Infof("Saving excluded resources to base/excluded/%s", filename)
+			if err := saveContentsToExcludedManifests(appPath, filename, removedManifest); err != nil {
+				log.Error(err)
+				log.Fatal("Failed to save excluded manifest contents to file")
+			}
 		}
 	}
 }
@@ -99,4 +121,30 @@ func saveContentsToBaseManifests(appPath string, filename string, contents []byt
 	path := filepath.Join(appPath, "base", "manifests")
 	filePath := filepath.Join(path, filename)
 	return ioutil.WriteFile(filePath, contents, os.FileMode(0640))
+}
+
+func saveContentsToExcludedManifests(appPath string, filename string, contents []byte) error {
+	path := filepath.Join(appPath, "base", "excluded")
+	filePath := filepath.Join(path, filename)
+
+	if exists, err := layout.FileOrDirExists(path); err != nil || !exists {
+		if exists {
+			log.Info("Directory base/excluded exists")
+		} else if err != nil {
+			log.Info("Error while creating excluded manifest")
+			return err
+		} else {
+			log.Infof("Creating %s", path)
+			return os.Mkdir(path, os.FileMode(0775))
+		}
+	}
+
+	return ioutil.WriteFile(filePath, contents, os.FileMode(0640))
+}
+
+func removeNamespaceResource(manifest string) (string, string, error) {
+	excludeStr := `apiVersion: v1
+kind: Namespace
+`
+	return excludeResourceFromManifest(excludeStr, manifest)
 }

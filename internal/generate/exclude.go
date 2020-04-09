@@ -248,3 +248,42 @@ func joinYAMLDocuments(documents []YAMLDocument) string {
 
 	return joined
 }
+
+func excludeResourceFromManifest(excludeStr, manifest string) (excludedManifest, newManifest string, err error) {
+	exclude := new(interface{})
+
+	if err := yaml.Unmarshal([]byte(excludeStr), exclude); err != nil {
+		return "", "", err
+	}
+
+	yamls := seperateYAMLDocuments(manifest)
+
+	fileManifestDocuments := make([]YAMLDocument, 0)
+	excludedDocuments := make([]YAMLDocument, 0)
+
+	for _, yamlDoc := range yamls {
+		ymlDoc := new(interface{})
+		if err := yaml.Unmarshal([]byte(string(yamlDoc)), ymlDoc); err != nil {
+			return "", "", err
+		}
+
+		excludeDoc := reflect.ValueOf(*exclude).Interface()
+		match, err := excludeItemMatchResource(&excludeDoc, ymlDoc)
+		if err != nil {
+			return "", "", err
+		}
+
+		if match {
+			excludedDocuments = append(excludedDocuments, yamlDoc)
+
+		} else {
+			fileManifestDocuments = append(fileManifestDocuments, yamlDoc)
+		}
+	}
+
+
+	excludedManifest = joinYAMLDocuments(excludedDocuments)
+	newManifest = joinYAMLDocuments(fileManifestDocuments)
+	err = nil
+	return
+}

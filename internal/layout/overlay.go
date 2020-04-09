@@ -13,12 +13,16 @@ func OverlayExists(appPath string) (bool, error) {
 	return FileOrDirExists(path)
 }
 
-func OverlayCreateGeneralLayout(appPath, namespace string) error {
+func OverlayCreateGeneralLayout(appPath, namespace string, overrideNamespaceInKustomization bool) error {
 	if err := overlayCreateDirectoryLayout(appPath); err != nil {
 		return err
 	}
 
-	if err := overlayCreateKustomizationFile(appPath); err != nil {
+	tmpNamespace := namespace
+	if !overrideNamespaceInKustomization {
+		tmpNamespace = ""
+	}
+	if err := overlayCreateKustomizationFile(appPath, tmpNamespace); err != nil {
 		return err
 	}
 	if err := overlayCreateNamespaceResourceFile(appPath, namespace); err != nil {
@@ -43,11 +47,12 @@ func overlayCreateDirectoryLayout(appPath string) error {
 	return nil
 }
 
-func overlayCreateKustomizationFile(appPath string) error {
+func overlayCreateKustomizationFile(appPath, namespace string) error {
 	path := filepath.Join(appPath, "overlay", "kustomization.yaml")
 
-	contents := `apiVersion: kustomize.config.k8s.io/v1beta1
+	templateStr := `apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+{{ if . }}namespace: {{ . }}{{ end }}
 bases:
   - ../base
 
@@ -58,7 +63,14 @@ resources:
 #  - patches/patch.yaml
 `
 
-	return ioutil.WriteFile(path, []byte(contents), os.FileMode(0640))
+	templ := template.Must(template.New("namespace").Parse(templateStr))
+	buff := new(bytes.Buffer)
+	if err := templ.Execute(buff, namespace); err != nil {
+		return err
+	}
+
+
+	return ioutil.WriteFile(path, buff.Bytes(), os.FileMode(0640))
 }
 
 func overlayCreateNamespaceResourceFile(appPath, namespace string) error {

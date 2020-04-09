@@ -62,7 +62,12 @@ otherwise we will use helm and hope it is in your path.`,
 
 		} else {
 			log.Info("Running URL manifest generation")
-			generate.DownloadManifestFiles(appPath, kgaConfig.Spec.Manifest, kgaConfig)
+			removeNamespaceResource := false
+			noOverrideNamespace := cmd.Flag("no-override-namespace").Value.String() == "true"
+			if kgaConfig.AppType() == config.AppTypeManifest && !noOverrideNamespace {
+				removeNamespaceResource = true
+			}
+			generate.DownloadManifestFiles(appPath, kgaConfig.Spec.Manifest, kgaConfig, removeNamespaceResource)
 		}
 
 		if kgaConfig.HasExcludeSpec() {
@@ -87,8 +92,19 @@ otherwise we will use helm and hope it is in your path.`,
 			log.Info("Overlay exists, leaving it alone")
 		} else {
 			log.Info("Creating overlay directory structure")
+			noOverrideNamespace := cmd.Flag("no-override-namespace").Value.String() == "true"
+			if noOverrideNamespace {
+				log.Info("Skipping namespace override in overlay/kustomization.yaml")
+			}
 
-			if err := layout.OverlayCreateGeneralLayout(appPath, kgaConfig.Spec.Namespace); err != nil {
+			overrideNamespace := false
+			if kgaConfig.AppType() == config.AppTypeManifest && !noOverrideNamespace {
+				// Override namespace since base manifests most probably don't have the appropriate namespace set
+				log.Info("Overriding namespace in overlay/kustomization.yaml. This might break your manifests for multi-namespace apps")
+				overrideNamespace = true
+			}
+
+			if err := layout.OverlayCreateGeneralLayout(appPath, kgaConfig.Spec.Namespace, overrideNamespace); err != nil {
 				log.Fatal(err)
 			}
 
@@ -99,4 +115,9 @@ otherwise we will use helm and hope it is in your path.`,
 
 		log.Info("Successfully generated kga app")
 	},
+}
+
+
+func init() {
+	Generate.Flags().Bool("no-override-namespace", false, "Do not override namespace (for manifest styled apps)")
 }
