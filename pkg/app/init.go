@@ -18,10 +18,13 @@ func Init(t Type, path, name string) error {
 	c := Config{Kind: ConfigKind, Version: ConfigVersion, Name: name}
 	t.initConfig(&c)
 
+	if c.Spec.Exclude == nil {
+		c.Spec.Exclude = new([]ExcludeItemSpec)
+	}
 	// Add default "kind: Secret" exclude
-	excludeSecret := make(map[interface{}]interface{})
+	excludeSecret := ExcludeItemSpec{}
 	excludeSecret["kind"] = "Secret"
-	c.Spec.Exclude = &[]ExcludeItemSpec{excludeSecret}
+	*c.Spec.Exclude = append(*c.Spec.Exclude, excludeSecret)
 
 	if err := saveKgaYaml(&c, filepath.Join(path, "kga.yaml")); err != nil {
 		return errors.Wrap(err, "failed to save kga.yaml file")

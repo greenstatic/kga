@@ -169,6 +169,6 @@ two: one
 	for i, tst := range tests {
 		documents := DocumentsSeperate(tst.content)
 		joined := DocumentsJoin(documents)
-		assert.Equal(tst.expected, joined, fmt.Sprintf("Failed test: %d", i))
+		assert.Equal(tst.expected, joined, fmt.Sprintf("Failed test: %d", i+1))
 	}
 }

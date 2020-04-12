@@ -117,7 +117,7 @@ func ExcludeResourceFromManifest(excludeStr, manifest string) (excludedManifest,
 
 	for _, yamlDoc := range yamls {
 		ymlDoc := new(interface{})
-		if err := yaml.Unmarshal([]byte(string(yamlDoc)), ymlDoc); err != nil {
+		if err := yaml.Unmarshal([]byte(yamlDoc), ymlDoc); err != nil {
 			return "", "", err
 		}
 

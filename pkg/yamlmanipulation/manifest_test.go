@@ -187,8 +187,8 @@ spec:
 		}
 
 		ans, err := ExcludeItemMatchesResource(exclude, resource)
-		assert.NoError(err, fmt.Sprintf("Failed test: %d", i))
-		assert.Equal(tst.expectResult, ans, fmt.Sprintf("Failed test: %d", i))
+		assert.NoError(err, fmt.Sprintf("Failed test: %d", i+1))
+		assert.Equal(tst.expectResult, ans, fmt.Sprintf("Failed test: %d", i+1))
 	}
 
 }

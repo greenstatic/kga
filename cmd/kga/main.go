@@ -9,7 +9,7 @@ import (
 func main() {
 	rootCmd.AddCommand(cmd.Init)
 	rootCmd.AddCommand(cmd.Generate)
-	rootCmd.AddCommand(cmd.Verify)
+	//rootCmd.AddCommand(cmd.Verify)
 	rootCmd.AddCommand(cmd.Version)
 	execute()
 }

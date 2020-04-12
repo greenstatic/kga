@@ -27,6 +27,6 @@ func TestValidateTypeString(t *testing.T) {
 	for i, tst := range tests {
 		err := ValidateTypeString(tst.input)
 
-		assert_.IsType(tst.err, err, fmt.Sprintf("Failed test: %d", i))
+		assert_.IsType(tst.err, err, fmt.Sprintf("Failed test: %d", i+1))
 	}
 }

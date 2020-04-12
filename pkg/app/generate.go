@@ -46,7 +46,7 @@ func Generate(path string) error {
 	}
 
 	if err := kustomizeBuildSuccseeds(path); err != nil {
-		return err
+		return errors.Wrap(err, "kustomize build check failed")
 	}
 
 	return nil
@@ -82,8 +82,8 @@ func baseKustomization(manifestResources, excludedResources []string) ([]byte, e
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-{{ range $val := .Manifests }}- manifests/{{ $val }}
-{{ end }}{{ range $val := .Excluded }}#- excluded/{{ $val }}
+{{ range $val := .Manifests }}  - manifests/{{ $val }}
+{{ end }}{{ range $val := .Excluded }}  #- excluded/{{ $val }}
 {{ end }}`
 
 	tmpl := template.Must(template.New("kustomization").Parse(templateStr))
@@ -125,37 +125,42 @@ func removeExcludedResources(manifestsPath, excludedManifestsPath string, exclud
 		fileManifestDocuments := make([]yamlmanipulation.Document, 0)
 		excludedDocuments := make([]yamlmanipulation.Document, 0)
 
-		for _, exclude := range *excludedManifests {
-			for _, yamlDoc := range yamls {
+		for _, yamlDoc := range yamls {
+			match := false
+			for _, exclude := range *excludedManifests {
 				ymlDoc := new(interface{})
 				if err := yaml.Unmarshal([]byte(string(yamlDoc)), ymlDoc); err != nil {
 					return err
 				}
 
 				excludeDoc := reflect.ValueOf(exclude).Interface()
-				match, err := yamlmanipulation.ExcludeItemMatchesResource(&excludeDoc, ymlDoc)
+				m, err := yamlmanipulation.ExcludeItemMatchesResource(&excludeDoc, ymlDoc)
 				if err != nil {
 					return err
 				}
 
-				if match {
-					//excludedDocuments, _ := excludedDocuments[f.Name()]
-					excludedDocuments = append(excludedDocuments, yamlDoc)
-
-				} else {
-					fileManifestDocuments = append(fileManifestDocuments, yamlDoc)
+				if m {
+					match = true
+					break
 				}
+			}
+
+			if match {
+				excludedDocuments = append(excludedDocuments, yamlDoc)
+
+			} else {
+				fileManifestDocuments = append(fileManifestDocuments, yamlDoc)
 			}
 		}
 
-		// Override the manifest file with the non excluded YAML documents
+		// Overwrite the manifest file with the non excluded YAML documents
 		manifestContent := yamlmanipulation.DocumentsJoin(fileManifestDocuments)
 		if err := ioutil.WriteFile(filepath.Join(manifestsPath, f.Name()), []byte(manifestContent), os.FileMode(0640)); err != nil {
 			return err
 		}
 		keptResourcesCount += len(fileManifestDocuments)
 
-		// Add excluded documents to <app>/base/excluded/
+		// Add excluded documents to excludedManifestsPath
 		if len(excludedDocuments) > 0 {
 			exists, err := files.FileOrDirExists(excludedManifestsPath)
 			if err != nil {
@@ -171,7 +176,8 @@ func removeExcludedResources(manifestsPath, excludedManifestsPath string, exclud
 
 			// Add file with excluded content
 			excludedContent := yamlmanipulation.DocumentsJoin(excludedDocuments)
-			if err := ioutil.WriteFile(filepath.Join(excludedManifestsPath, f.Name()), []byte(excludedContent), os.FileMode(0640)); err != nil {
+			if err := ioutil.WriteFile(filepath.Join(excludedManifestsPath, f.Name()), []byte(excludedContent),
+				os.FileMode(0640)); err != nil {
 				return err
 			}
 		}
@@ -179,6 +185,5 @@ func removeExcludedResources(manifestsPath, excludedManifestsPath string, exclud
 	}
 
 	log.Infof("Kept: %d resources, excluded: %d resources", keptResourcesCount, excludedResourcesCount)
-
 	return nil
 }
