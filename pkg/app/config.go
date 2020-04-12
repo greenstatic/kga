@@ -54,8 +54,28 @@ func ConfigYaml(c *Config) (string, error) {
 }
 
 func PathIsKgaApp(path string) (bool, error) {
-	// TODO - check if kga.yaml appears to be a valid kga app configuration
-	return files.FileOrDirExists(filepath.Join(path, "kga.yaml"))
+	exists, err := files.FileOrDirExists(filepath.Join(path, "kga.yaml"))
+	if err != nil {
+		return false, err
+	}
+	if !exists {
+		return false, nil
+	}
+
+	c, err := ParseFromFileConfig(filepath.Join(path, "kga.yaml"))
+	if err != nil {
+		return false, err
+	}
+
+	if c.Kind != ConfigKind {
+		return false, errors.New("kga.yaml file is not of kind: " + ConfigKind)
+	}
+
+	if err := c.Verify(); err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 type ConfigBadFieldValueError string
