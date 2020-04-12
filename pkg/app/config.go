@@ -79,11 +79,13 @@ func PathIsKgaApp(path string) (bool, error) {
 }
 
 type ConfigBadFieldValueError string
+
 func (s ConfigBadFieldValueError) Error() string {
 	return fmt.Sprintf("kga config bad field value: %s", string(s))
 }
 
 type ConfigMissingFieldError string
+
 func (s ConfigMissingFieldError) Error() string {
 	return fmt.Sprintf("kga config missing field: %s", string(s))
 }

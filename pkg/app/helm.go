@@ -47,7 +47,6 @@ func createHelmValuesFile(filepath string, content string) error {
 	return ioutil.WriteFile(filepath, []byte(content), os.FileMode(0644))
 }
 
-
 func (h *Helm) generate(c *Config, path string) error {
 	// Delete base dir
 	if err := files.RemoveDirIfExists(filepath.Join(path, "base")); err != nil {
@@ -85,11 +84,10 @@ func (h *Helm) createGenerateAppStructureBase(path string) error {
 	return nil
 }
 
-
 func helmExecutablePath() string {
-	envHelm := os.Getenv("HELM")
-	if envHelm != "" {
-		return envHelm
+	env := os.Getenv("HELM")
+	if env != "" {
+		return env
 	}
 
 	return "helm" // assume that it is in the users path
@@ -99,7 +97,7 @@ func helmCheckExecutable() error {
 	cmdPath := helmExecutablePath()
 	helm := exec.Command(cmdPath)
 	if err := helm.Run(); err != nil {
-		return errors.Wrapf(err, "cannot execute command: " + cmdPath)
+		return errors.Wrapf(err, "cannot execute command: "+cmdPath)
 	}
 
 	return nil

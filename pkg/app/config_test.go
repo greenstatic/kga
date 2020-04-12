@@ -186,16 +186,15 @@ spec:
   exclude:
   - apiVersion: "v1"
 `, nil},
-
 	}
 
 	for i, tst := range tests {
 		c := Config{}
 		b := []byte(tst.config)
 		err := yaml.Unmarshal(b, &c)
-		assert_.NoError(err, fmt.Sprintf("Failed test: %d, returned: %s", i + 1, err))
+		assert_.NoError(err, fmt.Sprintf("Failed test: %d, returned: %s", i+1, err))
 
 		err = c.Verify()
-		assert_.IsType(tst.err, err, fmt.Sprintf("Failed test: %d, returned: %s", i + 1, err))
+		assert_.IsType(tst.err, err, fmt.Sprintf("Failed test: %d, returned: %s", i+1, err))
 	}
 }

@@ -76,7 +76,7 @@ two: one
 
 	for i, tst := range tests {
 		documents := DocumentsSeperate(tst.content)
-		assert.Equal(tst.expectedNumberOfYAMLDocuments, len(documents), fmt.Sprintf("Failed test: %d", i + 1))
+		assert.Equal(tst.expectedNumberOfYAMLDocuments, len(documents), fmt.Sprintf("Failed test: %d", i+1))
 	}
 }
 

@@ -103,7 +103,6 @@ func ExcludeItemMatchesResource(excludeItem *interface{}, resource *interface{})
 	}
 }
 
-
 func ExcludeResourceFromManifest(excludeStr, manifest string) (excludedManifest, newManifest string, err error) {
 	exclude := new(interface{})
 

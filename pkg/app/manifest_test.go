@@ -20,12 +20,12 @@ func TestManifestUrlApplyTemplate(t *testing.T) {
 		Kind:    ConfigKind,
 		Version: ConfigVersion,
 		Name:    "foo",
-		Spec:    &Spec{
+		Spec: &Spec{
 			Namespace: "foo",
 			Type:      ManifestType,
-			Manifest:  &ManifestSpec{
+			Manifest: &ManifestSpec{
 				Version:  "v1.2.3",
-				Urls: []string{"http://example.com/{{ .Version }}/manifest.yaml"},
+				Urls:     []string{"http://example.com/{{ .Version }}/manifest.yaml"},
 				Template: map[string]string{"bar": "foo", "one": "1"},
 			},
 		},
@@ -62,11 +62,11 @@ func TestManifestUrlApplyTemplate(t *testing.T) {
 	for i, tst := range tests {
 		url, err := manifestUrlApplyTemplate(&c, tst.url)
 
-		assert_.Equal(tst.resultUrl, url, fmt.Sprintf("Failed test: %d", i + 1))
+		assert_.Equal(tst.resultUrl, url, fmt.Sprintf("Failed test: %d", i+1))
 		if tst.isError {
-			assert_.Error(err, fmt.Sprintf("Failed test: %d", i + 1))
+			assert_.Error(err, fmt.Sprintf("Failed test: %d", i+1))
 		} else {
-			assert_.NoError(err, fmt.Sprintf("Failed test: %d", i + 1))
+			assert_.NoError(err, fmt.Sprintf("Failed test: %d", i+1))
 		}
 	}
 }

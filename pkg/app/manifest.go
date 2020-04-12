@@ -69,7 +69,6 @@ func (m *Manifest) generate(c *Config, path string) error {
 
 		// TODO
 
-
 	}
 
 	return nil
@@ -101,9 +100,9 @@ func downloadAndSaveManifests(c *Config, manifestPath string) error {
 }
 
 type manifestTemplateFields struct {
-	Version string
+	Version  string
 	Template map[string]string
-	Config *Config
+	Config   *Config
 }
 
 func manifestUrlApplyTemplate(c *Config, url string) (string, error) {
@@ -132,7 +131,7 @@ func downloadUrlContents(url string) ([]byte, error) {
 		return []byte{}, err
 	}
 
-	if resp.StatusCode / 100 != 2 {
+	if resp.StatusCode/100 != 2 {
 		b, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return []byte{}, errors.Wrapf(err, "failed to read %d HTTP status code body contents", resp.StatusCode)
