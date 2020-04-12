@@ -33,3 +33,9 @@ func Fatal(a interface{}) {
 	Errorf("%s", a)
 	os.Exit(1)
 }
+
+func FatalOnError(err error) {
+	if err != nil {
+		Fatal(err)
+	}
+}

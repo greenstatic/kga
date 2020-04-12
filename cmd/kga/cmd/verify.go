@@ -1,11 +1,8 @@
 package cmd
 
 import (
-	"github.com/greenstatic/kga/pkg/config"
-	"github.com/greenstatic/kga/pkg/log"
 	"github.com/spf13/cobra"
 	"os"
-	"path/filepath"
 )
 
 var Verify = &cobra.Command{
@@ -13,23 +10,24 @@ var Verify = &cobra.Command{
 	Short: "Verify kga.yaml file or a kga app. file",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		appPath := args[0]
-
-		appPathIsDir, err := isDir(appPath)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if appPathIsDir {
-			appPath = filepath.Join(appPath, "kga.yaml")
-		}
-
-		if err := config.VerifyKgaFile(appPath); err != nil {
-			log.Error(err)
-			log.Fatal("Bad configuration!")
-		} else {
-			log.Info("Configuration is valid!")
-		}
+		// TODO
+		//appPath := args[0]
+		//
+		//appPathIsDir, err := isDir(appPath)
+		//if err != nil {
+		//	log.Fatal(err)
+		//}
+		//
+		//if appPathIsDir {
+		//	appPath = filepath.Join(appPath, "kga.yaml")
+		//}
+		//
+		//if err := config.VerifyKgaFile(appPath); err != nil {
+		//	log.Error(err)
+		//	log.Fatal("Bad configuration!")
+		//} else {
+		//	log.Info("Configuration is valid!")
+		//}
 	},
 }
 
