@@ -51,15 +51,15 @@ func (m *Manifest) generate(c *Config, path string) error {
 		return err
 	}
 
-	if err := generateBase(filepath.Join(path, "base")); err != nil {
-		return err
-	}
-
 	if c.Spec.Exclude != nil {
 		if err := removeExcludedResources(filepath.Join(path, "base", "manifests"),
 			filepath.Join(path, "base", "excluded"), c.Spec.Exclude); err != nil {
 			return err
 		}
+	}
+
+	if err := generateBase(filepath.Join(path, "base")); err != nil {
+		return err
 	}
 
 	// Overlay
