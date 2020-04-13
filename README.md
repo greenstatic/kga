@@ -1,55 +1,45 @@
 # kga - Kubernetes GitOps App CLI tool
-A CLI tool to help you manage your GitOps Kubernetes applications.
+![](docs/assets/kga_logo_white_bg_565.png)
 
-This project is under heavy development, all configurations, flags and commands are probably going to break in future versions.
+[![Go Report Card](https://goreportcard.com/badge/github.com/greenstatic/kga)](https://goreportcard.com/report/github.com/greenstatic/kga)
+![](https://img.shields.io/github/license/greenstatic/kga)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/51b957b0-912e-4227-bcfd-300c19555998/deploy-status)](https://app.netlify.com/sites/kga/deploys)
+
+kga is a **CLI tool** to help you **manage your GitOps Kubernetes applications**. It leverages industry standard tools like Kustomize and Helm to enable easier GitOps practices when creating resources for your Kubernetes applications. 
+
+[Documentation & Installation instructions](https://kga.greenstatic.dev)
+
+> kga is under active development, we have not finished our entire feature set yet!
+
+kga helms you manage the entire life cycle of an application:
+
+1. Initial creation of GitOps application structure
+2. Downloading of manifests
+3. Overriding and [kustomizing](https://kustomize.io) the application's manifests
+4. Static checks for current industry practices
+5. Update the applications manifests when a new version is available 
 
 
-The main aim of this tool is to be the glue that holds established Kubernetes and GitOps tools and techniques to manage and maintain applications in a GitOps fashion.
-kga tries to reduce the repetitive tasks a DevOps engineer must perform to create/update an application.
+Here is a typical workflow:
 
-kga is only needed when creating and updating applications.
-Once an application is created you can edit the resource YAMLs as you previously have, by using kustomization.
+1. Initialize an app `kga init <type> <app>`
+2. Make the necessary changes to the generated `kga.yaml` file
+3. Generate the app `kga generate <app>`
+4. Make any new changes to your <app\>/overlay
+5. Simply use `kustomize build <app>` to get your final manifest ready for deployment
+6. If you wish to make any changes, go ahead and change your <app\>/overlay, then just run `kga generate <app>` again
 
-We try to reduce technical debt by sticking to Kubernetes established tooling such as: Helm and Kustomization.
 
+## Features
+* 3 different application types:
+    * Basic - you define all your manifests and update them by yourself
+    * Manifest - provide a URL and version where we can fetch manifests
+    * Helm - provide a chart and helm override values and we will build your manifests
+* Namespace overrides for manifest apps
+* Exclusion of user defined resources
+* Manifest URL templating 
 
-## kga Application Structure
-The following is the kga folder structure for a Helm based application that kga generates.
-```
-app/
-    base/
-        manifests/              <- All chart resources
-        kustomization.yaml
-    
-    overlay/                    <- Our resources
-        pathces/                <- Patches the base manifests
-        resources/              <- Additional resources e.g. namespace resource
-        kustomization.yaml
-    
-    helm_values.yaml            <- Used when generating the chart template
-    kga.yaml                    <- kga configuration file
-    kustomization.yaml          <- Entrypoint into the app (kubectl apply -k .)
-```
-
-## Installation
-```bash
-go install github.com/greenstatic/kga/cmd/kga
-```
-
-### Installation from Source
-1. Clone repo
-2. Run `make`
-3. The built executable should be in `./bin/kga`
-
-## Usage
-1. Move into the directory where you wish to save your Kubernetes applications
-2. Run: `kga create <app-name>`
-3. If this is a Helm based app, edit `app-name/helm_values.yaml`
-4. Edit `app-name/kga.yaml` with all the #TODO fields filled out
-5. Run: `kga generate <app-name>`
-6. Now you can simply do `kubectl apply -k <app-name>` or `kustomize build <app-name>` to view your app's resources
-
-## Why Did We Develop kga?
+## Why kga?
 We are firm believers in maintaining applications in Kubernetes by practicing GitOps.
 One of the challenges we faced when doing Kubernetes GitOps was the lack of tooling for maintain apps.
 This and the number of shell scripts that were difficult to maintain as projects grew bigger made us develop a tool that would ease the process.
