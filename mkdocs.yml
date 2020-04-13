@@ -1,0 +1,30 @@
+site_name: kga - GitOps for Kubernetes
+repo_url: https://github.com/greenstatic/kga
+strict: true
+theme:
+  name: material
+  palette:
+    primary: indigo
+  logo: 'assets/kga_logo_icon.svg'
+  favicon: 'assets/favicon.png'
+
+markdown_extensions:
+- codehilite
+- admonition
+- toc:
+    permalink: "#"
+
+nav:
+- Overview: index.md
+- understand-the-basics.md
+- core-concepts.md
+- installation.md
+- getting-started.md
+- User Guide:
+  - user-guide/basic-app.md
+  - user-guide/manifest-app.md
+  - user-guide/helm-app.md
+  - user-guide/kga-yaml.md
+- faq.md
+- development.md
+- support.md

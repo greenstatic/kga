@@ -11,6 +11,8 @@ BINARY_LINUX=$(BINARY_NAME)_linux_amd64
 BUILD_DIR=./bin
 MAIN_PACKAGE="./cmd/kga"
 
+DOCS_BUILD_DIR=./html
+
 default: build
 
 .PHONY: fmt
@@ -37,3 +39,12 @@ test:
 clean:
 	$(GOCLEAN)
 	rm -drf $(BUILD_DIR)
+	rm -drf $(DOCS_BUILD_DIR)
+
+.PHONY: docs
+docs:
+	mkdocs build -d $(DOCS_BUILD_DIR)
+
+.PHONY: docs-dev
+docs-dev:
+	mkdocs serve
