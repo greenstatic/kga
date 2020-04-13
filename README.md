@@ -9,7 +9,7 @@ kga is a **CLI tool** to help you **manage your GitOps Kubernetes applications**
 
 [Documentation & Installation instructions](https://kga.greenstatic.dev)
 
-> ! kga is under active development, we have not finished our entire feature set yet. 
+> kga is under active development, we have not finished our entire feature set yet!
 
 kga helms you manage the entire life cycle of an application:
 

@@ -1,4 +1,6 @@
 # Overview of kga
+<img src="assets/kga_logo.svg" style="max-width: 565px"/>
+
 kga is a **CLI tool** to help you **manage your GitOps Kubernetes applications**.
 It leverages industry standard tools like [Kustomize](https://kustomize.io) and [Helm](https://helm.sh) to enable easier GitOps practices when creating resources for your Kubernetes applications.   
 
